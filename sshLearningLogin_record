@@ -1,0 +1,14 @@
+1) maven项目，空的，设置目录结构，java和resource
+2) Test下面的文件的applicationContext目录读取的目录是src那一层的
+3) 先做测试（在java/test下建立一个bean，也即Testservice，然后建立applicationCOntext.xml,然后再建立测试文件Test，进行引用bean看是否可以）
+4) 建立数据库 SEL.sql，并插入数据
+5) 引入hibernate
+	a)如果使用maven的时候，一开始是没有persistence的，要在project-structre里面加入hibernate模块后才会出现persistence
+	b)如果在运行tomcat的时候，出现classNotFount的话，可能是因为没有在对应的目录里加上对应的lib导出
+	c)对于hbm.xml这个文件配置的时候不要用它，生成映射的时候也不要生成它
+	d)数据库的表名要首字母大写
+6) 引入struts2
+	a)传到网页传到action里面，传值：http://blog.163.com/shexinyang@126/blog/static/136739312201241421164/
+	b)Action传到jsp里面:http://blog.csdn.net/hewei0241/article/details/27331019
+ii)@scope:prototype:https://my.oschina.net/u/916895/blog/102979
+

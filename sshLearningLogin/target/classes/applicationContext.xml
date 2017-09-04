@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!-- classpath 是指什么呢 -->
+    <context:property-placeholder location="classpath:db.properties" />
+
+    <!-- 使用annotation -->
+    <context:annotation-config/>
+    <!-- 使用annotation自动注册bean,并检查@Controller, @Service, @Repository注解已被注入 -->
+    <context:component-scan base-package="com.kevin.action"/>
+    <context:component-scan base-package="com.kevin.service"/>
+    <context:component-scan base-package="com.kevin.dao" />
+
+    <!-- data connection setting -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${database.driverClassName}"></property>
+        <property name="jdbcUrl" value="${database.url}"></property>
+        <property name="user" value="${database.username}"></property>
+        <property name="password" value="${database.password}"></property>
+        <!-- 设置数据库连接池的最大连接数 -->
+        <property name="maxPoolSize">
+            <value>50</value>
+        </property>
+        <!-- 设置数据库连接池的最小连接数 -->
+        <property name="minPoolSize">
+            <value>5</value>
+        </property>
+        <!-- 设置数据库连接池的初始化连接数 -->
+        <property name="initialPoolSize">
+            <value>5</value>
+        </property>
+        <!-- 设置数据库连接池的连接最大空闲时间 -->
+        <property name="maxIdleTime">
+            <value>20</value>
+        </property>
+        <!-- c3p0缓存Statement的数量数 -->
+        <property name="maxStatements">
+            <value>50</value>
+        </property>
+        <!-- 当连接池里面的连接用完的时候,C3P0一下获取新的连接数 -->
+        <property name="acquireIncrement">
+            <value>20</value>
+        </property>
+
+    </bean>
+
+    <!-- hibernate 管理-->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <!-- 引用上面设置的数据源 -->
+        <property name="dataSource">
+            <ref bean="dataSource" />
+        </property>
+
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.autoReconnect">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <!-- 解决session关闭问题 -->
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="current_session_context_class">thread</prop>
+
+                <prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
+                <prop key="hibernate.max_fetch_depth">3</prop>
+                <prop key="hibernate.connection.url">jdbc:mysql://localhost:3306/TESTDB</prop>
+                <prop key="hibernate.connection.driver_class">com.mysql.jdbc.Driver</prop>
+            </props>
+
+        </property>
+
+        <!-- 包扫描的方式加载注解类 -->
+        <property name="packagesToScan">
+            <list>
+                <value>com.kevin.entity</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 用注解来实现事物管理 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+</beans>
